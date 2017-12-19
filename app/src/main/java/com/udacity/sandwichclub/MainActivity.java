@@ -10,6 +10,18 @@ import android.widget.ListView;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String EXTRA_SCROLL_POSITION = "extra_scroll_position";
+    private static final int DEFAULT_SCROLL_POSITION = 0;
+
+    private ListView listView;
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //save list position
+        outState.putInt(EXTRA_SCROLL_POSITION, listView.getFirstVisiblePosition());
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
                 android.R.layout.simple_list_item_1, sandwiches);
 
         // Simplification: Using a ListView instead of a RecyclerView
-        ListView listView = findViewById(R.id.sandwiches_listview);
+        listView = findViewById(R.id.sandwiches_listview);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -28,6 +40,11 @@ public class MainActivity extends AppCompatActivity {
                 launchDetailActivity(position);
             }
         });
+        // restore list position
+        if(savedInstanceState!=null){
+            final int positionY = savedInstanceState.getInt(EXTRA_SCROLL_POSITION, DEFAULT_SCROLL_POSITION);
+            listView.smoothScrollToPosition(positionY);
+        }
     }
 
     private void launchDetailActivity(int position) {
